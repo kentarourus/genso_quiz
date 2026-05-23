@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>元素クイズ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="quiz-panel" aria-labelledby="app-title">
+        <header class="topbar">
+          <div class="title-block">
+            <h1 id="app-title">元素クイズ</h1>
+            <p>原子番号・元素記号・元素名を切り替えて練習できます。</p>
+          </div>
+          <div class="stats">
+            <div>
+              <span class="stat-label">正解</span>
+              <strong><span id="correctCount">0</span>/<span id="totalCount">0</span></strong>
+            </div>
+            <div>
+              <span class="stat-label">時間</span>
+              <strong id="timer">00:00</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="set-panel" aria-label="セット設定">
+          <div class="control-group">
+            <span class="control-label">セット数</span>
+            <div class="segmented compact" id="setSize">
+              <button type="button" data-size="5">5問</button>
+              <button type="button" class="is-active" data-size="10">10問</button>
+              <button type="button" data-size="20">20問</button>
+              <button type="button" data-size="50">50問</button>
+            </div>
+          </div>
+          <button type="button" class="primary-action" id="startSetButton">セット開始</button>
+        </section>
+
+        <section class="controls" aria-label="クイズ設定">
+          <div class="control-group">
+            <span class="control-label">問題</span>
+            <div class="segmented" id="questionMode">
+              <button type="button" class="is-active" data-mode="number">原子番号</button>
+              <button type="button" data-mode="symbol">元素記号</button>
+              <button type="button" data-mode="name">元素名</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <span class="control-label">回答</span>
+            <div class="segmented" id="answerMode">
+              <button type="button" data-mode="number">原子番号</button>
+              <button type="button" class="is-active" data-mode="symbol">元素記号</button>
+              <button type="button" data-mode="name">元素名</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="question-card">
+          <div class="question-head">
+            <div>
+              <div class="question-meta" id="questionMeta">原子番号から元素記号を答える</div>
+              <div class="progress" id="progressText">セット未開始</div>
+            </div>
+            <button type="button" id="skipButton">次へ</button>
+          </div>
+          <div class="question-value" id="questionValue">1</div>
+          <form id="answerForm" class="answer-form" autocomplete="off">
+            <label for="answerInput" id="answerLabel">元素記号を入力</label>
+            <div class="answer-row">
+              <input id="answerInput" name="answer" type="text" inputmode="text" autofocus />
+              <button type="submit">判定</button>
+            </div>
+          </form>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+        </section>
+
+        <footer class="actions">
+          <button type="button" id="hintButton">ヒント</button>
+          <button type="button" id="resetButton">成績リセット</button>
+        </footer>
+      </section>
+
+      <aside class="side-panel">
+        <section aria-labelledby="records-title">
+          <div class="side-heading">
+            <h2 id="records-title">セット記録</h2>
+            <button type="button" id="clearRecordsButton">消去</button>
+          </div>
+          <ol id="recordsList" class="record-list"></ol>
+        </section>
+
+        <section aria-labelledby="history-title">
+          <h2 id="history-title">最近の問題</h2>
+          <ol id="historyList" class="history-list"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
