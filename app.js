@@ -37,6 +37,27 @@ const labels = {
   name: "元素名",
 };
 
+const nameAliases = {
+  水素: ["スイソ"],
+  ホウ素: ["ホウソ", "ボロン"],
+  炭素: ["タンソ", "カーボン"],
+  窒素: ["チッソ"],
+  酸素: ["サンソ"],
+  ケイ素: ["ケイソ", "シリコン"],
+  硫黄: ["イオウ", "ユオウ"],
+  塩素: ["エンソ"],
+  鉄: ["テツ"],
+  銅: ["ドウ"],
+  亜鉛: ["アエン"],
+  ヒ素: ["ヒソ"],
+  臭素: ["シュウソ"],
+  銀: ["ギン"],
+  白金: ["ハッキン", "プラチナ"],
+  金: ["キン"],
+  水銀: ["スイギン"],
+  鉛: ["ナマリ"],
+};
+
 const state = {
   questionMode: "number",
   answerMode: "symbol",
@@ -69,10 +90,30 @@ function valueFor(element, mode) {
 }
 
 function normalize(value, mode) {
-  const trimmed = value.trim();
-  if (mode === "symbol") return trimmed.toLowerCase();
-  if (mode === "number") return trimmed.replace(/[０-９]/g, (n) => String.fromCharCode(n.charCodeAt(0) - 0xfee0));
-  return trimmed.replace(/\s/g, "");
+  const normalized = value.normalize("NFKC").trim();
+  if (mode === "symbol") return normalized.toLowerCase();
+  if (mode === "number") return String(Number(normalized.replace(/\D/g, "")));
+  return normalizeElementName(normalized);
+}
+
+function normalizeElementName(value) {
+  return value
+    .normalize("NFKC")
+    .trim()
+    .replace(/[\s・･.\-＿_]/g, "")
+    .replace(/[ぁ-ゖ]/g, (char) => String.fromCharCode(char.charCodeAt(0) + 0x60))
+    .replace(/ー/g, "")
+    .toLowerCase();
+}
+
+function acceptedAnswers(element, mode) {
+  if (mode !== "name") return [valueFor(element, mode)];
+  return [element.name, ...(nameAliases[element.name] || [])];
+}
+
+function isAnswerCorrect(userAnswer, element, mode) {
+  const normalizedUserAnswer = normalize(userAnswer, mode);
+  return acceptedAnswers(element, mode).some((answer) => normalize(answer, mode) === normalizedUserAnswer);
 }
 
 function formatTime(ms) {
@@ -219,7 +260,7 @@ document.querySelector("#answerForm").addEventListener("submit", (event) => {
   if (!state.setActive) startSetTimerOnly();
 
   const expected = valueFor(state.current, state.answerMode);
-  const isCorrect = normalize(answerInput.value, state.answerMode) === normalize(expected, state.answerMode);
+  const isCorrect = isAnswerCorrect(answerInput.value, state.current, state.answerMode);
   state.total += 1;
   if (isCorrect) state.correct += 1;
   updateScore();
